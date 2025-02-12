@@ -1,0 +1,35 @@
+
+#Creating complaints
+POST http://localhost:4000/user-api/add-complaint
+Content-Type: application/json
+
+{
+  "complaint_id": "C1005",
+  "title": "Buses are Late AND FOOD IS NOT GOOD ",
+  "description": "Talk with drivers to come early.",
+  "category": "Transport",
+  "user_id": "U2002",
+  "is_anonymous": true
+}
+
+###View all complaints
+GET http://localhost:4000/user-api/view-complaints
+
+### Like Complaint
+POST  http://localhost:4000/user-api/like-complaint/C1002
+
+### Dislike complaint
+POST  http://localhost:4000/user-api/dislike-complaint/C1002
+
+###Filter complaints by status and catrgory
+GET http://localhost:4000/user-api/filter-complaints?category=Transport&status=Pending
+
+### Filter by Weekly
+GET http://localhost:4000/user-api/filter-complaints?dateRange=weekly
+
+### Filters by Monthly
+GET http://localhost:4000/user-api/filter-complaints?category=Hostel&status=Resolved&dateRange=monthly
+
+###Filters by text
+GET http://localhost:4000/user-api/filter-complaints?searchKeyword=FOOD
+

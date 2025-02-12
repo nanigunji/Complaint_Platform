@@ -1,0 +1,182 @@
+.homepage-container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+
+
+/* Search & Filter */
+.search-filter {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.search-filter input,
+.search-filter select {
+  padding: 8px;
+  border: 1px solid #222323;
+  border-radius: 8px;
+  width: 260px;
+  
+  font-size: 16px;
+  outline: none;
+  /* transition: border-color 0.3s ease; */
+}
+
+.search-filter input:focus,
+.search-filter select:focus {
+  border-color: #181717;
+}
+
+/* Complaint Cards */
+.complaints-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.complaint-card {
+  background: white;
+  padding: 20px;
+  height: 16rem;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.complaint-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.username {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.tag {
+  margin-left: auto;
+  font-size: 14px;
+  background: #5f6061;
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.card-content h4 {
+  margin: 10px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.card-content p {
+  margin: 10px 0;
+  color: #555;
+  line-height: 1.5;
+}
+
+.github-btn {
+  display: inline-block;
+  background: #585859;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.github-btn:hover {
+  background: #313131;
+}
+
+.card-footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+.status {
+  margin-left: auto;
+  font-size: 15px;
+  background: #5f6061;
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  
+}
+
+.status.pending {
+  background-color: rgb(235, 35, 35);
+  color: white;
+  border-radius: 5px;
+  height: 2.3rem;
+  
+}
+
+.status.resolved {
+  background-color: green;
+  color: white;
+}
+
+
+.vote-btn {
+  background: white;
+  border: 1px solid #393838;
+  padding: 8px 8px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.vote-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05);
+}
+
+.vote-btn.upvote {
+  color: green;
+}
+
+.vote-btn.downvote {
+  color: red;
+}
+
+/* Add Complaint Button */
+.add-complaint-btn {
+  position: fixed;
+  bottom: 39px;
+  right: 20px;
+  background: #262525;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  font-size: 18px;
+  border-radius: 90px;
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.add-complaint-btn:hover {
+  background: #0056b3;
+  transform: scale(1.1);
+}
