@@ -1,132 +1,28 @@
-AdminHomePage.css
-/* AdminHomePage.css */
-.admin-home-page {
-    min-height: 100vh;
-    background-color: #f8f9fa;
-    padding: 2rem;
-  }
-  
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: linear-gradient(to right, #4f6d7a, #3a4e58);
-    color: white;
-    padding: 1.5rem;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .logo img {
-    height: 50px;
-    width: 50px;
-  }
-  
-  .logo h1 {
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  .category {
-    font-size: 1.5rem;
-    font-weight: 600;
-  }
-  
-  .complaints-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    margin-top: 2rem;
-  }
-  
-  .complaint-card {
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    flex: 1 1 calc(33.333% - 1.5rem);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .complaint-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .user-info img {
-    height: 40px;
-    width: 40px;
-    border-radius: 50%;
-    border: 2px solid #e9ecef;
-  }
-  
-  .user-info span {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #333;
-  }
-  
-  .complaint-title {
-    margin-top: 1rem;
-    font-size: 1.1rem;
-    color: #555;
-  }
-  
-  .complaint-description {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .vote-counts {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: #555;
-  }
-  
-  .vote-counts span {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .vote-counts .upvotes {
-    color: #4caf50; /* Green for upvotes */
-  }
-  
-  .vote-counts .downvotes {
-    color: #f44336; /* Red for downvotes */
-  }
-  
-  .edit-button {
-    margin-top: 1.5rem;
-    text-align: right;
-  }
-  
-  .edit-button button {
-    background-color: #4a90e2;
-    color: white;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .edit-button button:hover {
-    background-color: #357abd;
-  }
+.container {
+  max-width: 1200px;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  height: 100%; /* Ensure cards have the same height */
+}
+
+.glass-effect:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.status-pending {
+  color: #ff9800;
+}
+
+.status-ongoing {
+  color: #2196f3;
+}
+
+.status-resolved {
+  color: #4caf50;
+}

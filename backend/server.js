@@ -14,7 +14,11 @@ mc.connect('mongodb://localhost:27017')
 .then(client=>{
     const dbObj=client.db('complaintsdb')
     const complaintsCollectionObj=dbObj.collection('complaintsCollection')
+    const adminsCollectionObj=dbObj.collection('adminsCollection')
+    const flaggedusersCollectionObj=dbObj.collection('flaggedusersCollection')
     app.set('complaintsCollectionObj',complaintsCollectionObj)
+    app.set('adminsCollectionObj',adminsCollectionObj)
+    app.set('flaggedusersCollectionObj',flaggedusersCollectionObj)
     console.log('DB connection success')
   })
   .catch(err=>{

@@ -1,5 +1,11 @@
-const exp = require('express');
-const asyncHandler = require('express-async-handler');
+const exp = require("express");
+const asyncHandler = require("express-async-handler");
+const dotenv = require("dotenv");
+const axios = require("axios");
+const authenticateUser = require("../Middleware/authMiddleware.js");
+
+
+dotenv.config(); // Load environment variables
 
 const userApp = exp.Router();
 userApp.use(exp.json()); // Middleware to parse JSON
@@ -8,104 +14,189 @@ let complaintsCollectionObj;
 
 // Middleware to get the collection object from the app
 userApp.use((req, res, next) => {
-    complaintsCollectionObj = req.app.get('complaintsCollectionObj');
+    complaintsCollectionObj = req.app.get("complaintsCollectionObj");
     next();
 });
 
-// POST API to add a new complaint
-userApp.post('/add-complaint', asyncHandler(async (req, res) => {
-    const newComplaint = req.body; // Get complaint data from request body
+const CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+
+// Step 1: Redirect to GitHub OAuth
+userApp.get("/auth/github", (req, res) => {
+  const redirectUri = "http://localhost:5000/auth/github/callback";
+  res.redirect(
+    `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${redirectUri}&scope=user`
+  );
+});
+
+// Step 2: GitHub Callback and Token Exchange
+userApp.get("/auth/github/callback", async (req, res) => {
+  const { code } = req.query;
+  try {
+    const response = await axios.post(
+      "https://github.com/login/oauth/access_token",
+      {
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        code,
+      },
+      { headers: { Accept: "application/json" } }
+    );
+
+    const accessToken = response.data.access_token;
+    res.json({ token: accessToken });
+  } catch (error) {
+    res.status(500).json({ error: "GitHub Authentication Failed" });
+  }
+});
+
+  
+
+userApp.post(
+  "/add-complaint",
+  asyncHandler(async (req, res) => {
+ 
+
+    const { complaint_id, title, description, category, user_id, github_issue } = req.body;
 
     // Validate required fields
-    if (!newComplaint.complaint_id || !newComplaint.title || !newComplaint.description) {
-        return res.status(400).json({ message: "Complaint ID, title, and description are required" });
+    if (!complaint_id || !title || !description || !category || !user_id) {
+      
+      return res.status(400).json({
+        message: "Complaint ID, title, description, category, and user ID are required",
+      });
     }
 
-    // Auto-set timestamp and initialize default values
-    newComplaint.timestamp = new Date().toISOString();
-    newComplaint.likes = 0;
-    newComplaint.dislikes = 0;
-    newComplaint.status = "Pending";
-    newComplaint.comments = []; // Array to store admin comments
-    newComplaint.flagged = false; // Boolean to indicate if the complaint is flagged
+    const newComplaint = {
+      complaint_id,
+      title,
+      description,
+      category,
+      user_id,
+      github_issue: github_issue || null, // Added github_issue (default to null if not provided)
+      timestamp: new Date().toISOString(),
+      likes: 0,
+      dislikes: 0,
+      status: "Pending",
+      comments: [],
+      flagged: false,
+      votedUsers: {} // Initialize empty object to track user votes
+    };
 
-    // Insert the complaint into the database
-    const result = await complaintsCollectionObj.insertOne(newComplaint);
-    
-    if (result.acknowledged) {
+    try {
+      const result = await complaintsCollectionObj.insertOne(newComplaint);
+
+      if (result.acknowledged) {
         res.status(201).json({ message: "Complaint added successfully", complaint: newComplaint });
-    } else {
+      } else {
         res.status(500).json({ message: "Failed to add complaint" });
+      }
+    } catch (error) {
+      
+      res.status(500).json({ message: "Database error" });
     }
+  })
+);
+
+
+  
+
+// GET API to fetch complaints of a specific user and count of pending, resolved, and ongoing complaints
+userApp.get("/view-complaints/:userId", asyncHandler(async (req, res) => {
+  const { userId } = req.params; // Get the userId from the URL parameter
+
+  // Fetch the complaints of the specific user
+  const complaints = await complaintsCollectionObj
+    .find({ user_id: userId }) // Filter by userId
+    .sort({ timestamp: -1 }) // Sort by timestamp in descending order (most recent first)
+    .toArray();
+
+  // Count complaints by status
+  const counts = {
+    pending: complaints.filter(complaint => complaint.status === 'Pending').length,
+    resolved: complaints.filter(complaint => complaint.status === 'Resolved').length,
+    ongoing: complaints.filter(complaint => complaint.status === 'Ongoing').length
+  };
+
+  res.status(200).json({
+    complaints,
+    counts
+  });
 }));
 
 
-// GET API to fetch all complaints
-userApp.get('/view-complaints', asyncHandler(async (req, res) => {
-    // Fetch all complaints where is_anonymous is false
-    const complaints = await complaintsCollectionObj.find().toArray();
+//To fetch Users Complaints
 
-    // If no complaints found
-    if (complaints.length === 0) {
-        return res.status(404).json({ message: "No complaints found" });
-    }
+userApp.get("/my-complaints/:user_id", asyncHandler(async (req, res) => {
+  const userId = req.params.user_id; // Extract user_id from request parameters
 
-    // Return the list of complaints
-    res.status(200).json({ complaints });
+  const userComplaints = await complaintsCollectionObj
+      .find({ user_id: userId }) // Filter complaints by user_id
+      .sort({ timestamp: -1 }) // Sort by timestamp (most recent first)
+      .toArray();
+
+  res.status(200).json({ complaints: userComplaints });
 }));
+
+
 
 // POST API to like a complaint
-userApp.post('/like-complaint/:complaint_id', asyncHandler(async (req, res) => {
-    const complaintId = req.params.complaint_id; // Get complaint ID from URL parameter
 
-    // Find the complaint in the database
-    const complaint = await complaintsCollectionObj.findOne({ complaint_id: complaintId });
+
+userApp.post("/like-complaint/:complaint_id", authenticateUser, asyncHandler(async (req, res) => {
+    const { complaint_id } = req.params;
+    const userId = req.user.id; // Extracted from JWT
+
+    const complaint = await complaintsCollectionObj.findOne({ complaint_id });
 
     if (!complaint) {
         return res.status(404).json({ message: "Complaint not found" });
     }
 
-    // Increment likes count
-    complaint.likes += 1;
+    // Check if user already voted
+    if (complaint.votedUsers && complaint.votedUsers[userId]) {
+        return res.status(400).json({ message: "You have already voted" });
+    }
 
-    // Update the complaint in the database
+    // Update likes and store user's vote
     const result = await complaintsCollectionObj.updateOne(
-        { complaint_id: complaintId },
-        { $set: { likes: complaint.likes } }
+        { complaint_id },
+        {
+            $inc: { likes: 1 },
+            $set: { [`votedUsers.${userId}`]: "upvote" }
+        }
     );
 
-    if (result.modifiedCount > 0) {
-        res.status(200).json({ message: "Complaint liked", likes: complaint.likes });
-    } else {
-        res.status(500).json({ message: "Failed to like complaint" });
-    }
+    res.status(200).json({ message: "Complaint liked successfully" });
 }));
 
-// POST API to dislike a complaint
-userApp.post('/dislike-complaint/:complaint_id', asyncHandler(async (req, res) => {
-    const complaintId = req.params.complaint_id; // Get complaint ID from URL parameter
 
-    // Find the complaint in the database
-    const complaint = await complaintsCollectionObj.findOne({ complaint_id: complaintId });
+// POST API to dislike a complaint
+userApp.post("/dislike-complaint/:complaint_id", authenticateUser, asyncHandler(async (req, res) => {
+    const { complaint_id } = req.params;
+    const userId = req.user.id; // Extracted from JWT
+
+    const complaint = await complaintsCollectionObj.findOne({ complaint_id });
 
     if (!complaint) {
         return res.status(404).json({ message: "Complaint not found" });
     }
 
-    // Increment dislikes count
-    complaint.dislikes += 1;
+    // Check if user already voted (either like or dislike)
+    if (complaint.votedUsers && complaint.votedUsers[userId]) {
+        return res.status(400).json({ message: "You have already voted" });
+    }
 
-    // Update the complaint in the database
+    // Update dislikes and store user's vote
     const result = await complaintsCollectionObj.updateOne(
-        { complaint_id: complaintId },
-        { $set: { dislikes: complaint.dislikes } }
+        { complaint_id },
+        {
+            $inc: { dislikes: 1 },
+            $set: { [`votedUsers.${userId}`]: "downvote" }
+        }
     );
 
-    if (result.modifiedCount > 0) {
-        res.status(200).json({ message: "Complaint disliked", dislikes: complaint.dislikes });
-    } else {
-        res.status(500).json({ message: "Failed to dislike complaint" });
-    }
+    res.status(200).json({ message: "Complaint disliked successfully" });
 }));
 
 // Helper function to get the start and end of the week or month
@@ -113,15 +204,12 @@ function getDateRange(dateRange) {
     const now = new Date();
     let startDate, endDate;
 
-    if (dateRange === 'weekly') {
-        // Get the start and end date of the current week (assuming week starts on Sunday)
-        const dayOfWeek = now.getDay();
-        startDate = new Date(now.setDate(now.getDate() - dayOfWeek)); // Start of the week
-        endDate = new Date(now.setDate(now.getDate() + (6 - dayOfWeek))); // End of the week
-    } else if (dateRange === 'monthly') {
-        // Get the start and end date of the current month
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1); // First day of the month
-        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of the month
+    if (dateRange === "weekly") {
+        startDate = new Date(now.setDate(now.getDate() - now.getDay()));
+        endDate = new Date(now.setDate(now.getDate() + 6));
+    } else if (dateRange === "monthly") {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     } else {
         return null;
     }
@@ -130,50 +218,19 @@ function getDateRange(dateRange) {
 }
 
 // GET API to filter complaints with text-based search
-userApp.get('/filter-complaints', asyncHandler(async (req, res) => {
-    const { category, status, dateRange, searchKeyword } = req.query;
+userApp.get("/filter-complaints", asyncHandler(async (req, res) => {
+  const { category, status, dateRange, searchKeyword } = req.query;
+  let query = {};
 
-    // Build the query for MongoDB
-    let query = {};
+  if (searchKeyword) query.$text = { $search: searchKeyword };
+  if (category) query.category = category;
+  if (status) query.status = status;
+  if (dateRange) {
+      const { startDate, endDate } = getDateRange(dateRange);
+      if (startDate && endDate) query.timestamp = { $gte: startDate, $lte: endDate };
+  }
 
-    // Text-based search for title or description
-    if (searchKeyword) {
-        query.$text = { $search: searchKeyword }; // Use MongoDB's $text operator for text-based search
-    }
-
-    // Category filter
-    if (category) {
-        query.category = category;
-    }
-
-    // Status filter
-    if (status) {
-        query.status = status;
-    }
-
-    // Date range filter
-    if (dateRange) {
-        const { startDate, endDate } = getDateRange(dateRange);
-        if (startDate && endDate) {
-            query.timestamp = {
-                $gte: startDate,
-                $lte: endDate
-            };
-        }
-    }
-
-    try {
-        // Find complaints based on the query
-        const complaints = await complaintsCollectionObj.find(query).toArray();
-
-        if (complaints.length > 0) {
-            res.status(200).json({ complaints });
-        } else {
-            res.status(404).json({ message: "No complaints found for the given filters" });
-        }
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching complaints", error: error.message });
-    }
+  const complaints = await complaintsCollectionObj.find(query).sort({ timestamp: -1 }).toArray();
+  res.status(200).json({ complaints });
 }));
-
 module.exports = userApp;

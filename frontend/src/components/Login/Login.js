@@ -1,22 +1,35 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import "./Login.css"; // Import custom CSS for additional styling
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./Login.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
 
 const Login = () => {
+  const { user, admin, loginWithGithub, loginAsAdmin, logout } = useAuth();
   const [role, setRole] = useState("user");
-  let navigate=useNavigate()
+  const [error, setError] = useState("");
+  let navigate = useNavigate();
 
-  const handleUserLogin = () => {
-    window.location.href = "https://github.com/login";
-  };
+  // Redirect users/admins after login
+  useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    if (user) navigate("/home");
+    if (admin || adminToken) navigate("/adminpage");
+  }, [user, admin, navigate]);
 
-  const handleAdminLogin = (e) => {
+  // Handle Admin Login
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
-    const adminId = e.target.adminId.value;
+    setError("");
+    const admin_id = e.target.admin_id.value;
     const password = e.target.password.value;
-    console.log(`Admin login attempt with ID: ${adminId}`);
-    // Add admin authentication logic here
+
+    const success = await loginAsAdmin(admin_id, password);
+    if (success) {
+      navigate("/adminpage");
+    } else {
+      setError("Invalid credentials. Please try again.");
+    }
   };
 
   return (
@@ -25,68 +38,40 @@ const Login = () => {
         <h2 className="text-center mb-4">Welcome Back</h2>
         <p className="text-center mb-4">Please login to your account</p>
 
-        {/* Role Selector - Merged Buttons */}
         <div className="role-selector d-flex justify-content-center mb-4">
-          <div
-            className={`role-option ${role === "user" ? "active" : ""}`}
-            onClick={() => setRole("user")}
-          >
+          <div className={`role-option ${role === "user" ? "active" : ""}`} onClick={() => setRole("user")}>
             User
           </div>
-          <div
-            className={`role-option ${role === "admin" ? "active" : ""}`}
-            onClick={() => setRole("admin")}
-          >
+          <div className={`role-option ${role === "admin" ? "active" : ""}`} onClick={() => setRole("admin")}>
             Admin
           </div>
         </div>
 
-        {/* User Login */}
         {role === "user" ? (
           <div className="user-login text-center">
-            <button
-              onClick={handleUserLogin}
-              className="btn btn-dark w-100 mb-3 d-flex align-items-center justify-content-center"
-            >
-              <i className="fab fa-github me-2"></i>
-              Login with GitHub
-            </button>
-            <p className="text-muted">
-              Don't have a GitHub account?{" "}
-              <a
-                href="https://github.com/signup"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-decoration-none"
-              >
-                Create one
-              </a>
-            </p>
+            {user ? (
+              <div>
+                <h5>Welcome, {user.displayName}</h5>
+                <img src={user.photoURL} alt="Profile" width={50} className="rounded-circle mb-3" />
+                <button onClick={logout} className="btn btn-danger w-100">Logout</button>
+              </div>
+            ) : (
+              <button onClick={loginWithGithub} className="btn btn-dark w-100 d-flex align-items-center justify-content-center">
+                <i className="fab fa-github me-2"></i>
+                Login with GitHub
+              </button>
+            )}
           </div>
         ) : (
-          // Admin Login
           <form onSubmit={handleAdminLogin} className="admin-login">
+            {error && <p className="text-danger text-center">{error}</p>}
             <div className="mb-3">
-              <input
-                type="text"
-                name="adminId"
-                placeholder="Admin ID"
-                className="form-control"
-                required
-              />
+              <input type="text" name="admin_id" placeholder="Admin ID" className="form-control" required />
             </div>
             <div className="mb-3">
-              <input
-                type="password"
-                name="password"
-                placeholder="Admin Password"
-                className="form-control"
-                required
-              />
+              <input type="password" name="password" placeholder="Admin Password" className="form-control" required />
             </div>
-            <button type="submit" className="btn btn-primary w-100" onClick={()=>navigate('/adminpage')}>
-              Login
-            </button>
+            <button type="submit" className="btn btn-primary w-100">Login</button>
           </form>
         )}
       </div>

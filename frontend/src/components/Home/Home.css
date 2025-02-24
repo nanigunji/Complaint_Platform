@@ -1,182 +1,261 @@
-.homepage-container {
-  width: 90%;
+/* Importing Poppins Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+/* General Styling */
+.home-container-page body {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+.home-container-page .homepage-container {
   max-width: 1200px;
-  margin: 20px auto;
-  font-family: Arial, sans-serif;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
 }
 
-
-
-/* Search & Filter */
-.search-filter {
+/* Header */
+.home-container-page .header {
   display: flex;
-  justify-content: space-between;
-  gap: 15px;
-  margin: 20px 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  align-items: center;
+  background: transparent; /* Removed Background */
 }
 
-.search-filter input,
-.search-filter select {
-  padding: 8px;
-  border: 1px solid #222323;
-  border-radius: 8px;
-  width: 260px;
-  
-  font-size: 16px;
+/* Search and Filter */
+.home-container-page .search-container {
+  display: flex;
+  min-width: 200px;
+  position: relative;
+  flex: 1;
+}
+
+.home-container-page .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 1.2rem;
+}
+
+.home-container-page .search-input {
+  width: 80%;
+  padding: 0.85rem 1rem 0.85rem 3rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+.home-container-page .search-input:focus {
   outline: none;
-  /* transition: border-color 0.3s ease; */
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
 }
 
-.search-filter input:focus,
-.search-filter select:focus {
-  border-color: #181717;
+.home-container-page .filter-select {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  background-color: white;
+  cursor: pointer;
+  min-width: 150px;
+
+}
+
+.home-container-page .filter-select:focus {
+  outline: none;
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
 }
 
 /* Complaint Cards */
-.complaints-list {
+.home-container-page .complaints-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.home-container-page .complaint-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 1.5rem;
+}
+
+.home-container-page .complaint-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-container-page .card-header {
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-container-page .user-info {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 0.3rem;
 }
 
-.complaint-card {
-  background: white;
-  padding: 20px;
-  height: 16rem;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.home-container-page .username {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #212529;
 }
 
-.complaint-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+.home-container-page .date {
+  font-size: 1rem;
+  color: #6c757d;
 }
 
-.card-header {
+.home-container-page .voting-section {
+  display: flex;
+  gap: 1rem;
+}
+
+.home-container-page .vote-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 1.2rem;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+.home-container-page .vote-btn:hover {
+  background: #f8f9fa;
 }
 
-.username {
-  font-weight: bold;
-  font-size: 16px;
+.home-container-page .vote-btn.upvote {
+  color: #40c057;
 }
 
-.tag {
-  margin-left: auto;
-  font-size: 14px;
-  background: #5f6061;
-  color: white;
-  padding: 8px;
-  border-radius: 6px;
+.home-container-page .vote-btn.downvote {
+  color: #fa5252;
 }
 
-.card-content h4 {
-  margin: 10px 0;
-  font-size: 18px;
-  color: #333;
+.home-container-page .vote-count {
+  font-weight: 700;
+  font-size: 1.3rem;
 }
 
-.card-content p {
-  margin: 10px 0;
-  color: #555;
-  line-height: 1.5;
+.home-container-page .card-content {
+  padding-top: 1rem;
 }
 
-.github-btn {
-  display: inline-block;
-  background: #585859;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 14px;
-  transition: background 0.3s ease;
+.home-container-page .card-content h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
 }
 
-.github-btn:hover {
-  background: #313131;
+.home-container-page .card-content p {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #495057;
+  line-height: 1.8;
 }
 
-.card-footer {
+.home-container-page .card-footer {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-.status {
-  margin-left: auto;
-  font-size: 15px;
-  background: #5f6061;
-  color: white;
-  padding: 8px;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
 }
 
-.status.pending {
-  background-color: rgb(235, 35, 35);
-  color: white;
-  border-radius: 5px;
-  height: 2.3rem;
-  
+.home-container-page .category-tag {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
-.status.resolved {
-  background-color: green;
-  color: white;
+.home-container-page .status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
-
-.vote-btn {
-  background: white;
-  border: 1px solid #393838;
-  padding: 8px 8px;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
+.home-container-page .status-badge.pending {
+  background-color: #fff3bf;
+  color: #f08c00;
 }
 
-.vote-btn:hover {
-  background: #f0f0f0;
-  transform: scale(1.05);
+.home-container-page .status-badge.ongoing {
+  background-color: #d3f9d8;
+  color: #2b8a3e;
 }
 
-.vote-btn.upvote {
-  color: green;
+.home-container-page .status-badge.resolved {
+  background-color: #e3fafc;
+  color: #0c8599;
 }
 
-.vote-btn.downvote {
-  color: red;
+.home-container-page .status-icon {
+  width: 24px;
+  height: 24px;
 }
 
 /* Add Complaint Button */
-.add-complaint-btn {
+.home-container-page .add-complaint-btn {
   position: fixed;
-  bottom: 39px;
-  right: 20px;
-  background: #262525;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: #6c63ff;
   color: white;
   border: none;
-  padding: 15px 20px;
-  font-size: 18px;
-  border-radius: 90px;
+  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(108, 99, 255, 0.2);
+  transition: all 0.3s ease;
 }
 
-.add-complaint-btn:hover {
-  background: #0056b3;
-  transform: scale(1.1);
+.home-container-page .add-complaint-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(108, 99, 255, 0.3);
+  background-color: #5a52cc;
+}
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column; /* Stack elements vertically */
+    align-items: stretch; /* Stretch elements to full width */
+  }
+
+  .search-container {
+    width: 100%; /* Full width for search container */
+  }
+
+  .filter-select {
+    width: 100%; /* Full width for dropdowns */
+  }
 }

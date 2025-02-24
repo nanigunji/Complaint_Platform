@@ -1,86 +1,122 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Card, Button, Row, Col } from "react-bootstrap";
+import {
+  FaThumbsUp,
+  FaThumbsDown,
+  FaCalendarAlt,
+  FaEdit,
+  FaClock,
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaChartBar, // Icon for Analysis button
+} from "react-icons/fa";
+import { useAuth } from "../../Context/AuthContext";
 import "./AdminPage.css";
 
-const complaints = [
-  {
-    id: 1,
-    name: "User1",
-    title: "Complaint Title 1",
-    description: "This is a detailed description of the first complaint.",
-    upvotes: 10,
-    downvotes: 2,
-  },
-  {
-    id: 2,
-    name: "User2",
-    title: "Complaint Title 2",
-    description: "This is a detailed description of the second complaint.",
-    upvotes: 5,
-    downvotes: 1,
-  },
-  {
-    id: 3,
-    name: "User3",
-    title: "Complaint Title 3",
-    description: "This is a detailed description of the third complaint.",
-    upvotes: 8,
-    downvotes: 3,
-  },
-  {
-    id: 4,
-    name: "User4",
-    title: "Complaint Title 4",
-    description: "This is a detailed description of the fourth complaint.",
-    upvotes: 3,
-    downvotes: 0,
-  },
-  {
-    id: 5,
-    name: "User5",
-    title: "Complaint Title 5",
-    description: "This is a detailed description of the fifth complaint.",
-    upvotes: 12,
-    downvotes: 4,
-  },
-];
-
 const AdminPage = () => {
+  const navigate = useNavigate();
+  const { admin } = useAuth();
+  const [complaints, setComplaints] = useState([]);
+
+  useEffect(() => {
+    if (admin?.category) {
+      fetchComplaints(admin.category);
+    }
+  }, [admin]);
+
+  const fetchComplaints = async (category) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/admin-api/filter-complaints?category=${category}`
+      );
+      setComplaints(response.data.complaints);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+    }
+  };
+
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "Unknown Date";
+    const date = new Date(timestamp);
+    return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+  };
+
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case "Pending":
+        return <FaExclamationCircle className="text-warning" />;
+      case "Ongoing":
+        return <FaClock className="text-primary" />;
+      case "Resolved":
+        return <FaCheckCircle className="text-success" />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="admin-home-page container">
-
-      {/* Complaints Grid */}
-      <div className="complaints-grid">
-        {complaints.map((complaint) => (
-          <div key={complaint.id} className="complaint-card">
-            {/* User Info */}
-            <div className="user-info">
-              <img src="https://i.pravatar.cc/50" alt="User" />
-              <span>{complaint.name}</span>
-            </div>
-
-            {/* Complaint Title */}
-            <h3 className="complaint-title">{complaint.title}</h3>
-
-            {/* Complaint Description */}
-            <p className="complaint-description">{complaint.description}</p>
-
-            {/* Upvote and Downvote Counts */}
-            <div className="vote-counts">
-              <span className="upvotes">
-                <i className="fas fa-thumbs-up"></i> {complaint.upvotes} Upvotes
-              </span>
-              <span className="downvotes">
-                <i className="fas fa-thumbs-down"></i> {complaint.downvotes} Downvotes
-              </span>
-            </div>
-
-            {/* Edit Button */}
-            <div className="edit-button">
-              <button>Edit</button>
-            </div>
-          </div>
-        ))}
+    <div className="container">
+      {/* Header Section */}
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="text-primary text-center mt-3 mb-4">Admin Complaints Dashboard</h2>
+        <Button
+          variant="outline-primary"
+          onClick={() => navigate("/admin-analysis")}
+          className="d-flex align-items-center"
+        >
+          <FaChartBar className="me-2" />
+          Analysis
+        </Button>
       </div>
+
+      {/* Complaints List */}
+      <Row className="g-4">
+        {complaints.map((complaint) => (
+          <Col key={complaint.complaint_id} md={6} lg={4}>
+            <Card className="shadow-lg p-3 rounded glass-effect" style={{ height: "100%" }}>
+              <div className="d-flex justify-content-end">
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => navigate(`/complaints-details/${complaint.complaint_id}`)}
+                >
+                  <FaEdit style={{ fontSize: "1.5em" }} />
+                </Button>
+              </div>
+              <Card.Body>
+                <Card.Title className="fw-bold text-dark">{complaint.title}</Card.Title>
+                <Card.Text className="text-muted">
+                  <FaCalendarAlt className="me-2" />
+                  {formatDate(complaint.timestamp)}
+                </Card.Text>
+                <Card.Text>
+                  {complaint.description.length > 100
+                    ? `${complaint.description.substring(0, 100)}...`
+                    : complaint.description}
+                </Card.Text>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <Button variant="outline-success" size="sm" className="me-2">
+                      <FaThumbsUp /> {complaint.likes}
+                    </Button>
+                    <Button variant="outline-danger" size="sm">
+                      <FaThumbsDown /> {complaint.dislikes}
+                    </Button>
+                  </div>
+                  <div className="d-flex align-items-center">
+                    {getStatusIcon(complaint.status)}
+                    <span className={`ms-2 fw-bold status-${complaint.status.toLowerCase()}`}>
+                      {complaint.status}
+                    </span>
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
     </div>
   );
 };

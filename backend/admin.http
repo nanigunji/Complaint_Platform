@@ -1,10 +1,23 @@
+### Admin Login
+POST http://localhost:4000/admin-api/login
+Content-Type: application/json
 
-##View all complaints
+{
+  "admin_id": "ravi",
+  "password": "ravi@infrastructure"
+}
+
+###View all complaints
 GET http://localhost:4000/admin-api/view-complaints
 
 ###
-### Update complaint status (Pending → In Progress → Resolved)
-PUT http://localhost:4000/admin-api/update-status/C1002
+GET http://localhost:4000/admin-api/view-complaint/1739972132293
+
+### Get Complaints Count
+GET http://localhost:4000/admin-api/complaints-count/Transport
+
+### Update complaint status(Pending → In Progress → Resolved)
+PUT http://localhost:4000/admin-api/update-status/1740184025030
 Content-Type: application/json
 
 {
@@ -39,6 +52,5 @@ Content-Type: application/json
   "comment": "We will investigate this issue soon."
 }
 
-###Flag the complaint
-PUT http://localhost:4000/admin-api/complaints/C1005/flag 
+
 
