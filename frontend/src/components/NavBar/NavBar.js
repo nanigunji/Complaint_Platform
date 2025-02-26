@@ -39,7 +39,7 @@ const NavBar = () => {
             )}
 
             {/* Show Dashboard only if user/admin is logged in */}
-            {(user || admin) && (
+            {(user) && (
               <li className="nav-item">
                 <button
                   className="nav-link btn btn-link text-white"

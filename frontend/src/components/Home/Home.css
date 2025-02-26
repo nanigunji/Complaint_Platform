@@ -320,6 +320,74 @@
   font-style: italic;
 }
 
+.admin-updates-btn {
+  background: #4f2370;
+  color: white;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.3s ease;
+  margin-top: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  width: 20%;
+  justify-content: center;
+}
+
+.admin-updates-btn:hover {
+  background: #e9ecef;
+  color: black;
+}
+
+.admin-updates-section {
+  margin-top: 10px;
+  padding: 6px;
+  background: #f9f9f9;
+  border-radius: 10px;
+  border-left: 3px solid #4caf50;
+  font-size: 1.2rem;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.admin-update {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+}
+
+.update-text {
+  flex: 1;
+  margin-right: 8px;
+  font-size: 1.2rem;
+}
+
+.update-time {
+  font-size: 1rem;
+  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.no-updates {
+  text-align: center;
+  font-size: 1rem;
+  color: #888;
+  font-style: italic;
+}
+
 
 @media (max-width: 768px) {
   .header {
@@ -334,98 +402,32 @@
   .filter-select {
     width: 100%; /* Full width for dropdowns */
   }
-}
-.admin-updates-btn {
-    background: #4f2370;
-    color: white;
-    border: 1px solid #ccc;
-    padding: 6px 12px;
-    border-radius: 50px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.3s ease;
-    margin-top: 15px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    width: 20%;
+
+  .admin-updates-card {
+    max-width: 100%;
+    padding: 16px;
+  }
+
+  .admin-updates-btn {
+    width: 100%;
+    font-size: 1rem;
+    padding: 12px;
+    display: flex; /* Ensure flex behavior */
     justify-content: center;
+    align-items: center;
   }
-  
-  .admin-updates-btn:hover {
-    background: #e9ecef;
-    color: black;
-  }
-  
+
   .admin-updates-section {
-    margin-top: 10px;
-    padding: 6px;
-    background: #f9f9f9;
-    border-radius: 10px;
-    border-left: 3px solid #4caf50;
-    font-size: 1.2rem;
-    max-height: 100px;
+    max-height: 150px;
     overflow-y: auto;
+    font-size: 1rem;
   }
-  
+
   .admin-update {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #ffffff;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 1.2rem;
-    color: #333;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .update-text {
-    flex: 1;
-    margin-right: 8px;
-    font-size: 1.2rem;
-  }
-  
-  .update-time {
-    font-size: 1rem;
-    color: #777;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .no-updates {
-    text-align: center;
-    font-size: 1rem;
-    color: #888;
-    font-style: italic;
-  }
-  @media (max-width: 748px) {
-    .admin-updates-card {
-      max-width: 100%;
-      padding: 16px;
-    }
-  
-    .admin-updates-btn {
-      width: 100%;
-      font-size: 1rem;
-      padding: 12px;
-      justify-content: center;
-    }
-  
-    .admin-updates-section {
-      max-height: 150px;
-      overflow-y: auto;
-      font-size: 1rem;
-    }
-  
-    .admin-update {
-    display: flex;
-    flex-direction: column-reverse;  /* Stack elements vertically */
+    flex-direction: column-reverse; /* Stack elements vertically */
     align-items: flex-start;
     font-size: 0.9rem;
     padding: 6px;
-    }
+  }
 }
