@@ -153,7 +153,7 @@
     border-radius: 15px;
     font-size: 0.75rem;
     font-weight: bold;
-    text-transform: uppercase;
+    
     display: inline-block;
   }
   
@@ -171,7 +171,53 @@
     background-color: #28a745;
     color: #fff;
   }
+  .admin-updates {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+  }
   
+  .updates-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .updates-container {
+    max-height: 150px; /* Scrollable if many updates */
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+  
+  .update-entry {
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    border-left: 3px solid #007bff;
+  }
+  
+  .update-text {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 3px;
+  }
+  
+  .update-time {
+    font-size: 12px;
+    color: #666;
+    display: block;
+    text-align: right;
+  }
+  
+  .no-updates {
+    font-size: 14px;
+    color: #888;
+  }
+  
+
+
   /* Responsive Design */
   @media (max-width: 768px) {
     .user-dashboard-container .page-heading h1 {

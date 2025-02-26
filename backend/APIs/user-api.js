@@ -143,60 +143,84 @@ userApp.get("/my-complaints/:user_id", asyncHandler(async (req, res) => {
 // POST API to like a complaint
 
 
+// POST API to like a complaint
 userApp.post("/like-complaint/:complaint_id", authenticateUser, asyncHandler(async (req, res) => {
-    const { complaint_id } = req.params;
-    const userId = req.user.id; // Extracted from JWT
+  const { complaint_id } = req.params;
+  const userId = req.user.id; // Extracted from JWT
 
-    const complaint = await complaintsCollectionObj.findOne({ complaint_id });
+  const complaint = await complaintsCollectionObj.findOne({ complaint_id });
 
-    if (!complaint) {
-        return res.status(404).json({ message: "Complaint not found" });
-    }
+  if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+  }
 
-    // Check if user already voted
-    if (complaint.votedUsers && complaint.votedUsers[userId]) {
-        return res.status(400).json({ message: "You have already voted" });
-    }
+  // Check if user already voted
+  if (complaint.votedUsers && complaint.votedUsers[userId] === "upvote") {
+      return res.status(400).json({ message: "You have already liked this complaint" });
+  }
 
-    // Update likes and store user's vote
-    const result = await complaintsCollectionObj.updateOne(
-        { complaint_id },
-        {
-            $inc: { likes: 1 },
-            $set: { [`votedUsers.${userId}`]: "upvote" }
-        }
-    );
+  let updateQuery = {};
 
-    res.status(200).json({ message: "Complaint liked successfully" });
+  if (complaint.votedUsers && complaint.votedUsers[userId] === "downvote") {
+      // User previously disliked, switch to like
+      updateQuery = {
+          $inc: { likes: 1, dislikes: -1 },
+          $set: { [`votedUsers.${userId}`]: "upvote" }
+      };
+  } else {
+      // User is liking for the first time
+      updateQuery = {
+          $inc: { likes: 1 },
+          $set: { [`votedUsers.${userId}`]: "upvote" }
+      };
+  }
+
+  const result = await complaintsCollectionObj.updateOne(
+      { complaint_id },
+      updateQuery
+  );
+
+  res.status(200).json({ message: "Complaint liked successfully" });
 }));
-
 
 // POST API to dislike a complaint
 userApp.post("/dislike-complaint/:complaint_id", authenticateUser, asyncHandler(async (req, res) => {
-    const { complaint_id } = req.params;
-    const userId = req.user.id; // Extracted from JWT
+  const { complaint_id } = req.params;
+  const userId = req.user.id; // Extracted from JWT
 
-    const complaint = await complaintsCollectionObj.findOne({ complaint_id });
+  const complaint = await complaintsCollectionObj.findOne({ complaint_id });
 
-    if (!complaint) {
-        return res.status(404).json({ message: "Complaint not found" });
-    }
+  if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+  }
 
-    // Check if user already voted (either like or dislike)
-    if (complaint.votedUsers && complaint.votedUsers[userId]) {
-        return res.status(400).json({ message: "You have already voted" });
-    }
+  // Check if user already voted
+  if (complaint.votedUsers && complaint.votedUsers[userId] === "downvote") {
+      return res.status(400).json({ message: "You have already disliked this complaint" });
+  }
 
-    // Update dislikes and store user's vote
-    const result = await complaintsCollectionObj.updateOne(
-        { complaint_id },
-        {
-            $inc: { dislikes: 1 },
-            $set: { [`votedUsers.${userId}`]: "downvote" }
-        }
-    );
+  let updateQuery = {};
 
-    res.status(200).json({ message: "Complaint disliked successfully" });
+  if (complaint.votedUsers && complaint.votedUsers[userId] === "upvote") {
+      // User previously liked, switch to dislike
+      updateQuery = {
+          $inc: { likes: -1, dislikes: 1 },
+          $set: { [`votedUsers.${userId}`]: "downvote" }
+      };
+  } else {
+      // User is disliking for the first time
+      updateQuery = {
+          $inc: { dislikes: 1 },
+          $set: { [`votedUsers.${userId}`]: "downvote" }
+      };
+  }
+
+  const result = await complaintsCollectionObj.updateOne(
+      { complaint_id },
+      updateQuery
+  );
+
+  res.status(200).json({ message: "Complaint disliked successfully" });
 }));
 
 // Helper function to get the start and end of the week or month
