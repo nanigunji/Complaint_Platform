@@ -13,6 +13,7 @@ A web platform where students can submit and track complaints within their colle
 - Submit and track complaints
 - Admin panel for complaint management
 - View ongoing complaints
+- Know your complaint status after the problem is solved
 
 ## Installation
 1. Clone the repository:
